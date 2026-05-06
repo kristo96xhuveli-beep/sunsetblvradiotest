@@ -780,7 +780,6 @@ const musicBtn = document.getElementById('musicBtn');
 
 let playlist = [];
 let started = false;
-let currentTrack = 0;
 
 // LOAD PLAYLIST
 fetch('audio.json')
@@ -797,58 +796,130 @@ fetch('audio.json')
     playlist = data.night;
   }
 
-  // PRELOAD FIRST TRACK ONLY
-  if(playlist.length){
-    music.src = encodeURI(playlist[0].file);
-    music.preload = "auto";
-  }
+  // START BACKGROUND DURATION LOADING
+  preloadDurations();
 
 });
+
+// LOAD DURATIONS IN BACKGROUND
+function preloadDurations(){
+
+  playlist.forEach(track => {
+
+    const a = new Audio();
+
+    a.preload = "metadata";
+
+    a.src = encodeURI(track.file);
+
+    a.onloadedmetadata = () => {
+      track.duration = Math.floor(a.duration);
+    };
+
+  });
+
+}
+
+// GET LIVE TRACK
+function getLiveTrack(){
+
+  // IF DURATIONS NOT READY YET
+  if(!playlist.every(t => t.duration)){
+    return { index:0, offset:0 };
+  }
+
+  const total = playlist.reduce((sum, t) => sum + t.duration, 0);
+
+  const now = Math.floor(Date.now() / 1000);
+
+  const position = now % total;
+
+  let acc = 0;
+
+  for(let i = 0; i < playlist.length; i++){
+
+    if(position < acc + playlist[i].duration){
+
+      return {
+        index: i,
+        offset: position - acc
+      };
+
+    }
+
+    acc += playlist[i].duration;
+  }
+
+  return { index:0, offset:0 };
+}
 
 // PLAY BUTTON
 musicBtn.addEventListener('click', async function(){
 
   if(!playlist.length) return;
 
-  if (!started) {
+  if(!started){
 
-    music.volume = 0.3;
-    music.muted = false;
+    const live = getLiveTrack();
 
-    try{
-      await music.play();
+    music.src = encodeURI(playlist[live.index].file);
 
-      started = true;
-      musicBtn.innerHTML = "🔊 Mute";
+    music.addEventListener('loadedmetadata', async function firstLoad(){
 
-    }catch(err){
-      console.log(err);
-    }
+      music.removeEventListener('loadedmetadata', firstLoad);
+
+      if(live.offset){
+        music.currentTime = live.offset;
+      }
+
+      music.volume = 0.3;
+      music.muted = false;
+
+      try{
+
+        await music.play();
+
+        started = true;
+
+        musicBtn.innerHTML = "🔊 Mute";
+
+      }catch(err){
+        console.log(err);
+      }
+
+    });
 
     return;
   }
 
-  if (music.muted) {
+  if(music.muted){
     music.muted = false;
     musicBtn.innerHTML = "🔊 Mute";
-  } else {
+  }else{
     music.muted = true;
     musicBtn.innerHTML = "🔇 Unmute";
   }
 
 });
 
-// NEXT SONG
+// SONG END
 music.addEventListener('ended', function(){
 
-  currentTrack++;
+  const live = getLiveTrack();
 
-  if(currentTrack >= playlist.length){
-    currentTrack = 0;
-  }
+  music.src = encodeURI(playlist[live.index].file);
 
-  music.src = encodeURI(playlist[currentTrack].file);
-  music.play();
+  music.addEventListener('loadedmetadata', function nextLoad(){
+
+    music.removeEventListener('loadedmetadata', nextLoad);
+
+    if(live.offset){
+      music.currentTime = live.offset;
+    }
+
+    music.play();
+
+  });
 
 });
 
