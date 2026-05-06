@@ -798,63 +798,7 @@ fetch('audio.json')
   } else {
     playlist = data.night;
   }
-
-  // START BACKGROUND DURATION LOADING
-  preloadDurations();
-
-});
-
-// LOAD DURATIONS IN BACKGROUND
-function preloadDurations(){
-
-  playlist.forEach(track => {
-
-    const a = new Audio();
-
-   a.preload = "auto";
-
-    a.src = encodeURI(track.file);
-
-    a.onloadedmetadata = () => {
-      track.duration = Math.floor(a.duration);
-    };
-
-  });
-
-}
-
-// GET LIVE TRACK
-function getLiveTrack(){
-
-  // IF DURATIONS NOT READY YET
-  if(!playlist.every(t => t.duration)){
-    return { index:0, offset:0 };
-  }
-
-  const total = playlist.reduce((sum, t) => sum + t.duration, 0);
-
-  const now = Math.floor(Date.now() / 1000);
-
-  const position = now % total;
-
-  let acc = 0;
-
-  for(let i = 0; i < playlist.length; i++){
-
-    if(position < acc + playlist[i].duration){
-
-      return {
-        index: i,
-        offset: position - acc
-      };
-
-    }
-
-    acc += playlist[i].duration;
-  }
-
-  return { index:0, offset:0 };
-}
+ });
 
 // PLAY BUTTON
 musicBtn.addEventListener('click', async function(){
@@ -863,40 +807,24 @@ musicBtn.addEventListener('click', async function(){
 
   if(!started){
 
-    const live = getLiveTrack();
+    const randomIndex = Math.floor(Math.random() * playlist.length);
 
-    music.src = encodeURI(playlist[live.index].file);
+music.src = encodeURI(playlist[randomIndex].file);
 
     music.load();
 
-    music.addEventListener('canplay', async function firstLoad(){
+    music.addEventListener('canplaythrough', async function firstLoad(){
 
-      music.removeEventListener('canplay', firstLoad);
+      music.removeEventListener('canplaythrough', firstLoad);
 
       try{
 
-        if(live.offset > 0){
+       // RANDOM POSITION INSIDE SONG
+const randomTime = Math.floor(
+  Math.random() * Math.max(30, music.duration - 30)
+);
 
-          // MOBILE SAFE SEEK
-          music.currentTime = live.offset;
-
-          await new Promise(resolve => {
-
-            const check = () => {
-
-              if(Math.abs(music.currentTime - live.offset) < 2){
-                resolve();
-              } else {
-                setTimeout(check, 100);
-              }
-
-            };
-
-            check();
-
-          });
-
-        }
+music.currentTime = randomTime;
 
         music.volume = 0.3;
         music.muted = false;
@@ -929,29 +857,25 @@ musicBtn.addEventListener('click', async function(){
 // SONG END
 music.addEventListener('ended', function(){
 
-  const live = getLiveTrack();
+  const randomIndex = Math.floor(Math.random() * playlist.length);
 
-  music.src = encodeURI(playlist[live.index].file);
+  music.src = encodeURI(playlist[randomIndex].file);
 
   music.load();
 
-  music.addEventListener('canplay', function nextLoad(){
+  music.addEventListener('canplaythrough', function nextLoad(){
 
-    music.removeEventListener('canplay', nextLoad);
+    music.removeEventListener('canplaythrough', nextLoad);
 
-   if(live.offset > 0){
+    const randomTime = Math.floor(
+      Math.random() * Math.max(30, music.duration - 30)
+    );
 
-  music.currentTime = live.offset;
+    music.currentTime = randomTime;
 
-  setTimeout(() => {
-    music.play();
-  }, 150);
-
-} else {
-
-  music.play();
-
-}
+    setTimeout(() => {
+      music.play();
+    }, 100);
 
   });
 
