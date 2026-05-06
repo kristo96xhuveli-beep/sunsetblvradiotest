@@ -778,6 +778,9 @@ data-en="Qeparo is one of Albania's hidden gems — a charming village above a p
 const music = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicBtn');
 
+music.preload = "auto";
+music.playsInline = true;
+
 let playlist = [];
 let started = false;
 
@@ -808,7 +811,7 @@ function preloadDurations(){
 
     const a = new Audio();
 
-    a.preload = "metadata";
+   a.preload = "auto";
 
     a.src = encodeURI(track.file);
 
@@ -864,18 +867,39 @@ musicBtn.addEventListener('click', async function(){
 
     music.src = encodeURI(playlist[live.index].file);
 
-    music.addEventListener('loadedmetadata', async function firstLoad(){
+    music.load();
 
-      music.removeEventListener('loadedmetadata', firstLoad);
+    music.addEventListener('canplay', async function firstLoad(){
 
-      if(live.offset){
-        music.currentTime = live.offset;
-      }
-
-      music.volume = 0.3;
-      music.muted = false;
+      music.removeEventListener('canplay', firstLoad);
 
       try{
+
+        if(live.offset > 0){
+
+          // MOBILE SAFE SEEK
+          music.currentTime = live.offset;
+
+          await new Promise(resolve => {
+
+            const check = () => {
+
+              if(Math.abs(music.currentTime - live.offset) < 2){
+                resolve();
+              } else {
+                setTimeout(check, 100);
+              }
+
+            };
+
+            check();
+
+          });
+
+        }
+
+        music.volume = 0.3;
+        music.muted = false;
 
         await music.play();
 
@@ -909,15 +933,25 @@ music.addEventListener('ended', function(){
 
   music.src = encodeURI(playlist[live.index].file);
 
-  music.addEventListener('loadedmetadata', function nextLoad(){
+  music.load();
 
-    music.removeEventListener('loadedmetadata', nextLoad);
+  music.addEventListener('canplay', function nextLoad(){
 
-    if(live.offset){
-      music.currentTime = live.offset;
-    }
+    music.removeEventListener('canplay', nextLoad);
 
+   if(live.offset > 0){
+
+  music.currentTime = live.offset;
+
+  setTimeout(() => {
     music.play();
+  }, 150);
+
+} else {
+
+  music.play();
+
+}
 
   });
 
