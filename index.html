@@ -780,87 +780,50 @@ const musicBtn = document.getElementById('musicBtn');
 
 let playlist = [];
 let started = false;
+let currentTrack = 0;
 
-// 🔥 LOAD AUDIO.JSON
+// LOAD PLAYLIST
 fetch('audio.json')
-  .then(res => res.json())
-  .then(data => {
+.then(res => res.json())
+.then(data => {
+
   const hour = new Date().getHours();
 
-  let selected;
-
   if(hour >= 1 && hour < 11){
-    selected = data.morning;
+    playlist = data.morning;
   } else if(hour >= 11 && hour < 20){
-    selected = data.day;
+    playlist = data.day;
   } else {
-    selected = data.night;
+    playlist = data.night;
   }
 
-  loadDurations(selected);
+  // PRELOAD FIRST TRACK ONLY
+  if(playlist.length){
+    music.src = encodeURI(playlist[0].file);
+    music.preload = "auto";
+  }
+
 });
 
-// 🔥 AUTO GET DURATIONS
-function loadDurations(tracks){
-  return Promise.all(tracks.map(track => {
-    return new Promise(resolve => {
-      const audio = new Audio(encodeURI(track.file));
-      audio.preload = "metadata";
+// PLAY BUTTON
+musicBtn.addEventListener('click', async function(){
 
-      audio.onloadedmetadata = () => {
-        resolve({
-          file: track.file,
-          duration: Math.floor(audio.duration)
-        });
-      };
-    });
-  })).then(result => {
-    playlist = result;
-    startRadio();
-  });
-}
-
-// 🔥 RADIO SYNC
-function startRadio(){
-
-  if (!playlist.length) return;
-
-  const total = playlist.reduce((sum, t) => sum + t.duration, 0);
-
-  const now = Math.floor(Date.now() / 1000);
-  const position = now % total;
-
-  let acc = 0;
-  let current = 0;
-  let offset = 0;
-
-  for(let i = 0; i < playlist.length; i++){
-    if(position < acc + playlist[i].duration){
-      current = i;
-      offset = position - acc;
-      break;
-    }
-    acc += playlist[i].duration;
-  }
-
-  music.src = encodeURI(playlist[current].file);
-  music.onloadedmetadata = () => {
-  music.currentTime = offset;
-};
-}
-
-// 🔥 BUTTON (your system preserved)
-musicBtn.addEventListener('click', function(){
+  if(!playlist.length) return;
 
   if (!started) {
 
     music.volume = 0.3;
     music.muted = false;
 
-    music.play().then(() => {
+    try{
+      await music.play();
+
       started = true;
       musicBtn.innerHTML = "🔊 Mute";
-    });
+
+    }catch(err){
+      console.log(err);
+    }
 
     return;
   }
@@ -874,9 +837,19 @@ musicBtn.addEventListener('click', function(){
   }
 
 });
-    music.addEventListener('ended', function(){
-    startRadio();
-    music.play();
+
+// NEXT SONG
+music.addEventListener('ended', function(){
+
+  currentTrack++;
+
+  if(currentTrack >= playlist.length){
+    currentTrack = 0;
+  }
+
+  music.src = encodeURI(playlist[currentTrack].file);
+  music.play();
+
 });
 
 })();
