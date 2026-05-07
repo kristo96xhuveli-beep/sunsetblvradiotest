@@ -805,7 +805,7 @@ fetch('audio.json')
 function saveState(){
 
   localStorage.setItem("radioState", JSON.stringify({
-    src: music.src,
+    src: decodeURI(music.getAttribute("src") || ""),
     time: music.currentTime,
     savedAt: Date.now()
   }));
@@ -821,7 +821,10 @@ function playRandomSong(){
 
   const track = playlist[randomIndex];
 
-  music.src = encodeURI(track.file);
+  music.setAttribute(
+    "src",
+    encodeURI(track.file)
+  );
 
   music.load();
 
@@ -903,9 +906,9 @@ musicBtn.addEventListener('click', async function(){
       localStorage.getItem("radioState") || "null"
     );
 
-    if(saved){
+    if(saved && saved.src){
 
-      music.src = saved.src;
+      music.setAttribute("src", saved.src);
 
       music.load();
 
@@ -913,19 +916,19 @@ musicBtn.addEventListener('click', async function(){
 
         music.removeEventListener('loadedmetadata', restore);
 
-        // CONTINUE AS IF MUSIC NEVER STOPPED
-        const passed = (Date.now() - saved.savedAt) / 1000;
-
-        const maxTime = music.duration - 2;
-
-music.currentTime = Math.min(
-  (saved.time || 0) + passed,
-  maxTime
-);
-
-        music.volume = 0.3;
-
         try{
+
+          // CONTINUE AS IF MUSIC NEVER STOPPED
+          const passed = (Date.now() - saved.savedAt) / 1000;
+
+          const maxTime = music.duration - 2;
+
+          music.currentTime = Math.min(
+            (saved.time || 0) + passed,
+            maxTime
+          );
+
+          music.volume = 0.3;
 
           await new Promise(resolve => {
             setTimeout(resolve, 150);
@@ -934,7 +937,12 @@ music.currentTime = Math.min(
           await music.play();
 
         }catch(err){
+
           console.log(err);
+
+          // FALLBACK
+          playRandomSong();
+
         }
 
       });
