@@ -801,6 +801,16 @@ fetch('audio.json')
 
 });
 
+// SAVE RADIO STATE
+function saveState(){
+
+  localStorage.setItem("radioState", JSON.stringify({
+    src: music.src,
+    time: music.currentTime
+  }));
+
+}
+
 // PLAY RANDOM SONG
 function playRandomSong(){
 
@@ -840,6 +850,8 @@ function playRandomSong(){
 
       await music.play();
 
+      saveState();
+
     }catch(err){
       console.log(err);
     }
@@ -847,6 +859,17 @@ function playRandomSong(){
   });
 
 }
+
+// SAVE POSITION EVERY 5 SECONDS
+setInterval(() => {
+
+  if(!music.paused){
+
+    saveState();
+
+  }
+
+}, 5000);
 
 // PLAY BUTTON
 musicBtn.addEventListener('click', async function(){
@@ -857,7 +880,39 @@ musicBtn.addEventListener('click', async function(){
 
     started = true;
 
-    playRandomSong();
+    const saved = JSON.parse(
+      localStorage.getItem("radioState") || "null"
+    );
+
+    if(saved){
+
+      music.src = saved.src;
+
+      music.load();
+
+      music.addEventListener('loadedmetadata', async function restore(){
+
+        music.removeEventListener('loadedmetadata', restore);
+
+        music.currentTime = saved.time || 0;
+
+        music.volume = 0.3;
+
+        try{
+
+          await music.play();
+
+        }catch(err){
+          console.log(err);
+        }
+
+      });
+
+    } else {
+
+      playRandomSong();
+
+    }
 
     musicBtn.innerHTML = "🔊 Mute";
 
