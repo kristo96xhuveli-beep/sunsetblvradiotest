@@ -784,9 +784,6 @@ music.playsInline = true;
 let playlist = [];
 let started = false;
 
-// CHANGE THIS ONLY ONCE
-const stationStart = 1746660000;
-
 // LOAD PLAYLIST
 fetch('audio.json')
 .then(res => res.json())
@@ -804,32 +801,51 @@ fetch('audio.json')
 
 });
 
-// FIND CURRENT SONG
-function getCurrentTrack(){
+// PLAY RANDOM SONG
+function playRandomSong(){
 
-  const total = playlist.reduce((sum, t) => sum + t.duration, 0);
+  const randomIndex = Math.floor(
+    Math.random() * playlist.length
+  );
 
-  const now = Math.floor(Date.now() / 1000);
+  const track = playlist[randomIndex];
 
-  const elapsed = (now - stationStart) % total;
+  music.src = encodeURI(track.file);
 
-  let acc = 0;
+  music.load();
 
-  for(let i = 0; i < playlist.length; i++){
+  music.addEventListener('loadedmetadata', async function loadSong(){
 
-    if(elapsed < acc + playlist[i].duration){
+    music.removeEventListener('loadedmetadata', loadSong);
 
-      return {
-        index: i,
-        offset: elapsed - acc
-      };
+    try{
 
+      // RANDOM POSITION
+      const maxTime = Math.max(
+        30,
+        track.duration - 30
+      );
+
+      const randomTime = Math.floor(
+        Math.random() * maxTime
+      );
+
+      music.currentTime = randomTime;
+
+      music.volume = 0.3;
+
+      await new Promise(resolve => {
+        setTimeout(resolve, 200);
+      });
+
+      await music.play();
+
+    }catch(err){
+      console.log(err);
     }
 
-    acc += playlist[i].duration;
-  }
+  });
 
-  return { index:0, offset:0 };
 }
 
 // PLAY BUTTON
@@ -839,81 +855,27 @@ musicBtn.addEventListener('click', async function(){
 
   if(!started){
 
-    const current = getCurrentTrack();
+    started = true;
 
-    music.src = encodeURI(playlist[current.index].file);
+    playRandomSong();
 
-    music.load();
-
-    music.addEventListener('loadedmetadata', async function firstLoad(){
-
-      music.removeEventListener('loadedmetadata', firstLoad);
-
-      try{
-
-        music.volume = 0.3;
-
-music.muted = true;
-
-await music.play();
-
-music.currentTime = current.offset;
-
-setTimeout(() => {
-
-  music.muted = false;
-
-  started = true;
-
-  musicBtn.innerHTML = "🔊 Mute";
-
-}, 300);
-
-      }catch(err){
-        console.log(err);
-      }
-
-    });
+    musicBtn.innerHTML = "🔊 Mute";
 
     return;
   }
 
-  if(music.muted){
-    music.muted = false;
-    musicBtn.innerHTML = "🔊 Mute";
-  } else {
-    music.muted = true;
-    musicBtn.innerHTML = "🔇 Unmute";
-  }
+  music.muted = !music.muted;
+
+  musicBtn.innerHTML = music.muted
+    ? "🔇 Unmute"
+    : "🔊 Mute";
 
 });
 
 // AUTO NEXT SONG
 music.addEventListener('ended', function(){
 
-  const current = getCurrentTrack();
-
-  music.src = encodeURI(playlist[current.index].file);
-
-  music.load();
-
-  music.addEventListener('loadedmetadata', function nextLoad(){
-
-    music.removeEventListener('loadedmetadata', nextLoad);
-
-    music.muted = true;
-
-music.play();
-
-music.currentTime = current.offset;
-
-setTimeout(() => {
-
-  music.muted = false;
-
-}, 300);
-
-  });
+  playRandomSong();
 
 });
 
