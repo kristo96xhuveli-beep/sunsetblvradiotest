@@ -806,7 +806,8 @@ function saveState(){
 
   localStorage.setItem("radioState", JSON.stringify({
     src: music.src,
-    time: music.currentTime
+    time: music.currentTime,
+    savedAt: Date.now()
   }));
 
 }
@@ -860,7 +861,7 @@ function playRandomSong(){
 
 }
 
-// SAVE POSITION EVERY 5 SECONDS
+// SAVE POSITION EVERY 3 SECONDS
 setInterval(() => {
 
   if(!music.paused){
@@ -869,7 +870,25 @@ setInterval(() => {
 
   }
 
-}, 5000);
+}, 3000);
+
+// SAVE ON REFRESH / CLOSE
+window.addEventListener('beforeunload', () => {
+
+  saveState();
+
+});
+
+// MOBILE SAVE
+document.addEventListener('visibilitychange', () => {
+
+  if(document.hidden){
+
+    saveState();
+
+  }
+
+});
 
 // PLAY BUTTON
 musicBtn.addEventListener('click', async function(){
@@ -894,11 +913,18 @@ musicBtn.addEventListener('click', async function(){
 
         music.removeEventListener('loadedmetadata', restore);
 
-        music.currentTime = saved.time || 0;
+        // CONTINUE AS IF MUSIC NEVER STOPPED
+        const passed = (Date.now() - saved.savedAt) / 1000;
+
+        music.currentTime = (saved.time || 0) + passed;
 
         music.volume = 0.3;
 
         try{
+
+          await new Promise(resolve => {
+            setTimeout(resolve, 150);
+          });
 
           await music.play();
 
