@@ -801,16 +801,6 @@ fetch('audio.json')
 
 });
 
-// SAVE STATE
-function saveState(){
-
-  localStorage.setItem("radioState", JSON.stringify({
-    src: music.src,
-    time: music.currentTime
-  }));
-
-}
-
 // PLAY RANDOM SONG
 function playRandomSong(){
 
@@ -845,8 +835,6 @@ function playRandomSong(){
 
       await music.play();
 
-      saveState();
-
     }catch(err){
       console.log(err);
     }
@@ -855,32 +843,8 @@ function playRandomSong(){
 
 }
 
-// SAVE EVERY 3 SECONDS
-setInterval(() => {
-
-  if(!music.paused){
-
-    saveState();
-
-  }
-
-}, 3000);
-
-// SAVE ON REFRESH
-window.addEventListener('beforeunload', saveState);
-
-document.addEventListener('visibilitychange', () => {
-
-  if(document.hidden){
-
-    saveState();
-
-  }
-
-});
-
 // PLAY BUTTON
-musicBtn.addEventListener('click', async function(){
+musicBtn.addEventListener('click', function(){
 
   if(!playlist.length) return;
 
@@ -888,43 +852,7 @@ musicBtn.addEventListener('click', async function(){
 
     started = true;
 
-    const saved = JSON.parse(
-      localStorage.getItem("radioState") || "null"
-    );
-
-    if(saved && saved.src){
-
-      music.src = saved.src;
-
-      music.load();
-
-      music.addEventListener('loadedmetadata', async function restore(){
-
-        music.removeEventListener('loadedmetadata', restore);
-
-        try{
-
-          music.currentTime = saved.time || 0;
-
-          music.volume = 0.3;
-
-          await music.play();
-
-        }catch(err){
-
-          console.log(err);
-
-          playRandomSong();
-
-        }
-
-      });
-
-    } else {
-
-      playRandomSong();
-
-    }
+    playRandomSong();
 
     musicBtn.innerHTML = "🔊 Mute";
 
