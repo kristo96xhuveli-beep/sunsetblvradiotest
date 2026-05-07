@@ -916,7 +916,12 @@ musicBtn.addEventListener('click', async function(){
         // CONTINUE AS IF MUSIC NEVER STOPPED
         const passed = (Date.now() - saved.savedAt) / 1000;
 
-        music.currentTime = (saved.time || 0) + passed;
+        const maxTime = music.duration - 2;
+
+music.currentTime = Math.min(
+  (saved.time || 0) + passed,
+  maxTime
+);
 
         music.volume = 0.3;
 
