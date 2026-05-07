@@ -851,25 +851,23 @@ musicBtn.addEventListener('click', async function(){
 
       try{
 
-        music.currentTime = current.offset;
-
-await new Promise(resolve => {
-  setTimeout(resolve, 300);
-
-});
-
         music.volume = 0.3;
-        music.muted = false;
 
-        setTimeout(async () => {
+music.muted = true;
 
-          await music.play();
+await music.play();
 
-          started = true;
+music.currentTime = current.offset;
 
-          musicBtn.innerHTML = "🔊 Mute";
+setTimeout(() => {
 
-        }, 100);
+  music.muted = false;
+
+  started = true;
+
+  musicBtn.innerHTML = "🔊 Mute";
+
+}, 300);
 
       }catch(err){
         console.log(err);
@@ -903,10 +901,16 @@ music.addEventListener('ended', function(){
 
     music.removeEventListener('loadedmetadata', nextLoad);
 
-    music.currentTime = current.offset;
+    music.muted = true;
+
+music.play();
+
+music.currentTime = current.offset;
 
 setTimeout(() => {
-  music.play();
+
+  music.muted = false;
+
 }, 300);
 
   });
