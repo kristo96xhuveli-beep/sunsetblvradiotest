@@ -851,21 +851,10 @@ musicBtn.addEventListener('click', async function(){
 
       try{
 
-        await new Promise(resolve => {
+        music.currentTime = current.offset;
 
-  const seek = () => {
-
-    music.currentTime = current.offset;
-
-    if(Math.abs(music.currentTime - current.offset) < 2){
-      resolve();
-    } else {
-      setTimeout(seek, 100);
-    }
-
-  };
-
-  seek();
+await new Promise(resolve => {
+  setTimeout(resolve, 300);
 
 });
 
@@ -914,23 +903,11 @@ music.addEventListener('ended', function(){
 
     music.removeEventListener('loadedmetadata', nextLoad);
 
-    const seek = () => {
+    music.currentTime = current.offset;
 
-  music.currentTime = current.offset;
-
-  if(Math.abs(music.currentTime - current.offset) < 2){
-
-    music.play();
-
-  } else {
-
-    setTimeout(seek, 100);
-
-  }
-
-};
-
-seek();
+setTimeout(() => {
+  music.play();
+}, 300);
 
   });
 
