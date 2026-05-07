@@ -845,9 +845,9 @@ musicBtn.addEventListener('click', async function(){
 
     music.load();
 
-    music.addEventListener('canplaythrough', async function firstLoad(){
+    music.addEventListener('loadedmetadata', async function firstLoad(){
 
-      music.removeEventListener('canplaythrough', firstLoad);
+      music.removeEventListener('loadedmetadata', firstLoad);
 
       try{
 
@@ -910,9 +910,9 @@ music.addEventListener('ended', function(){
 
   music.load();
 
-  music.addEventListener('canplaythrough', function nextLoad(){
+  music.addEventListener('loadedmetadata', function nextLoad(){
 
-    music.removeEventListener('canplaythrough', nextLoad);
+    music.removeEventListener('loadedmetadata', nextLoad);
 
     const seek = () => {
 
