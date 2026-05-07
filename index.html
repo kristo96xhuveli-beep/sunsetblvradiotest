@@ -801,13 +801,12 @@ fetch('audio.json')
 
 });
 
-// SAVE RADIO STATE
+// SAVE STATE
 function saveState(){
 
   localStorage.setItem("radioState", JSON.stringify({
-    src: decodeURI(music.getAttribute("src") || ""),
-    time: music.currentTime,
-    savedAt: Date.now()
+    src: music.src,
+    time: music.currentTime
   }));
 
 }
@@ -821,10 +820,7 @@ function playRandomSong(){
 
   const track = playlist[randomIndex];
 
-  music.setAttribute(
-    "src",
-    encodeURI(track.file)
-  );
+  music.src = encodeURI(track.file);
 
   music.load();
 
@@ -834,7 +830,6 @@ function playRandomSong(){
 
     try{
 
-      // RANDOM POSITION
       const maxTime = Math.max(
         30,
         track.duration - 30
@@ -848,10 +843,6 @@ function playRandomSong(){
 
       music.volume = 0.3;
 
-      await new Promise(resolve => {
-        setTimeout(resolve, 200);
-      });
-
       await music.play();
 
       saveState();
@@ -864,7 +855,7 @@ function playRandomSong(){
 
 }
 
-// SAVE POSITION EVERY 3 SECONDS
+// SAVE EVERY 3 SECONDS
 setInterval(() => {
 
   if(!music.paused){
@@ -875,14 +866,9 @@ setInterval(() => {
 
 }, 3000);
 
-// SAVE ON REFRESH / CLOSE
-window.addEventListener('beforeunload', () => {
+// SAVE ON REFRESH
+window.addEventListener('beforeunload', saveState);
 
-  saveState();
-
-});
-
-// MOBILE SAVE
 document.addEventListener('visibilitychange', () => {
 
   if(document.hidden){
@@ -908,7 +894,7 @@ musicBtn.addEventListener('click', async function(){
 
     if(saved && saved.src){
 
-      music.setAttribute("src", saved.src);
+      music.src = saved.src;
 
       music.load();
 
@@ -918,21 +904,9 @@ musicBtn.addEventListener('click', async function(){
 
         try{
 
-          // CONTINUE AS IF MUSIC NEVER STOPPED
-          const passed = (Date.now() - saved.savedAt) / 1000;
-
-          const maxTime = music.duration - 2;
-
-          music.currentTime = Math.min(
-            (saved.time || 0) + passed,
-            maxTime
-          );
+          music.currentTime = saved.time || 0;
 
           music.volume = 0.3;
-
-          await new Promise(resolve => {
-            setTimeout(resolve, 150);
-          });
 
           await music.play();
 
@@ -940,7 +914,6 @@ musicBtn.addEventListener('click', async function(){
 
           console.log(err);
 
-          // FALLBACK
           playRandomSong();
 
         }
