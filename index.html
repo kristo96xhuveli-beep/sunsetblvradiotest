@@ -784,6 +784,9 @@ music.playsInline = true;
 let playlist = [];
 let started = false;
 
+// CHANGE THIS ONLY ONCE
+const stationStart = 1746660000;
+
 // LOAD PLAYLIST
 fetch('audio.json')
 .then(res => res.json())
@@ -798,7 +801,36 @@ fetch('audio.json')
   } else {
     playlist = data.night;
   }
- });
+
+});
+
+// FIND CURRENT SONG
+function getCurrentTrack(){
+
+  const total = playlist.reduce((sum, t) => sum + t.duration, 0);
+
+  const now = Math.floor(Date.now() / 1000);
+
+  const elapsed = (now - stationStart) % total;
+
+  let acc = 0;
+
+  for(let i = 0; i < playlist.length; i++){
+
+    if(elapsed < acc + playlist[i].duration){
+
+      return {
+        index: i,
+        offset: elapsed - acc
+      };
+
+    }
+
+    acc += playlist[i].duration;
+  }
+
+  return { index:0, offset:0 };
+}
 
 // PLAY BUTTON
 musicBtn.addEventListener('click', async function(){
@@ -807,9 +839,9 @@ musicBtn.addEventListener('click', async function(){
 
   if(!started){
 
-    const randomIndex = Math.floor(Math.random() * playlist.length);
+    const current = getCurrentTrack();
 
-music.src = encodeURI(playlist[randomIndex].file);
+    music.src = encodeURI(playlist[current.index].file);
 
     music.load();
 
@@ -819,21 +851,20 @@ music.src = encodeURI(playlist[randomIndex].file);
 
       try{
 
-       // RANDOM POSITION INSIDE SONG
-const randomTime = Math.floor(
-  Math.random() * Math.max(30, music.duration - 30)
-);
-
-music.currentTime = randomTime;
+        music.currentTime = current.offset;
 
         music.volume = 0.3;
         music.muted = false;
 
-        await music.play();
+        setTimeout(async () => {
 
-        started = true;
+          await music.play();
 
-        musicBtn.innerHTML = "🔊 Mute";
+          started = true;
+
+          musicBtn.innerHTML = "🔊 Mute";
+
+        }, 100);
 
       }catch(err){
         console.log(err);
@@ -847,19 +878,19 @@ music.currentTime = randomTime;
   if(music.muted){
     music.muted = false;
     musicBtn.innerHTML = "🔊 Mute";
-  }else{
+  } else {
     music.muted = true;
     musicBtn.innerHTML = "🔇 Unmute";
   }
 
 });
 
-// SONG END
+// AUTO NEXT SONG
 music.addEventListener('ended', function(){
 
-  const randomIndex = Math.floor(Math.random() * playlist.length);
+  const current = getCurrentTrack();
 
-  music.src = encodeURI(playlist[randomIndex].file);
+  music.src = encodeURI(playlist[current.index].file);
 
   music.load();
 
@@ -867,11 +898,7 @@ music.addEventListener('ended', function(){
 
     music.removeEventListener('canplaythrough', nextLoad);
 
-    const randomTime = Math.floor(
-      Math.random() * Math.max(30, music.duration - 30)
-    );
-
-    music.currentTime = randomTime;
+    music.currentTime = current.offset;
 
     setTimeout(() => {
       music.play();
