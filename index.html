@@ -247,7 +247,8 @@ body.dark .avail-btn:hover{background:#2a5a8c;}
 </head>
 <body>
 
-<audio id="bgMusic"></audio>
+<button class="music-btn" id="musicBtn"> ▶ Radio </button>
+ 
 <div class="menu-overlay" id="menuOverlay">
   <div class="menu-panel">
     <button class="menu-close" id="menuClose">&#10005;</button>
@@ -772,24 +773,6 @@ data-en="Qeparo is one of Albania's hidden gems — a charming village above a p
 
 </div>
 
-<script>
-
-const musicBtn =
-document.getElementById('musicBtn');
-
-musicBtn.addEventListener(
-  'click',
-  function(){
-
-    window.open(
-      'https://YOUR-RADIO.pages.dev',
-      '_blank'
-    );
-
-  }
-);
-
-</script>
  
  <script>
 
@@ -1383,5 +1366,25 @@ document.addEventListener('click', function(e){
 });
 
 </script>
+
+<script>
+
+const musicBtn =
+document.getElementById('musicBtn');
+
+musicBtn.addEventListener(
+  'click',
+  function(){
+
+    window.open(
+      'https://radio.kristo96xhuveli.workers.dev/',
+      '_blank'
+    );
+
+  }
+);
+
+</script>
+ 
 </body>
 </html>
