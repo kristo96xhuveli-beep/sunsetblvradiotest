@@ -246,6 +246,17 @@ body.dark .avail-btn:hover{background:#2a5a8c;}
 </style>
 </head>
 <body>
+
+<iframe
+  id="radioFrame"
+  src=""
+  style="
+    display:none;
+    width:0;
+    height:0;
+    border:none;
+  ">
+</iframe>
  
 <div class="menu-overlay" id="menuOverlay">
   <div class="menu-panel">
@@ -1364,19 +1375,37 @@ document.addEventListener('click', function(e){
 });
 
 </script>
+ <script>
 
-<script>
-
-const musicBtn =
-document.getElementById('musicBtn');
-
-musicBtn.addEventListener(
-  'click',
+document.addEventListener(
+  'DOMContentLoaded',
   function(){
 
-    window.open(
-      'https://radio.kristo96xhuveli.workers.dev/',
-      '_blank'
+    const musicBtn =
+    document.getElementById('musicBtn');
+
+    const radioFrame =
+    document.getElementById('radioFrame');
+
+    let started = false;
+
+    musicBtn.addEventListener(
+      'click',
+      function(){
+
+        if(!started){
+
+          radioFrame.src =
+          'https://radio.kristo96xhuveli.workers.dev/';
+
+          started = true;
+
+          musicBtn.innerHTML =
+          '⏸ Radio';
+
+        }
+
+      }
     );
 
   }
