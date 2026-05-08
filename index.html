@@ -801,12 +801,11 @@ fetch('audio.json')
     playlist = data.night;
   }
 
-  // AUTO RESTORE
   restoreMusic();
 
 });
 
-// SAVE MUSIC STATE
+// SAVE STATE
 function saveMusicState(){
 
   if(!music.src) return;
@@ -814,7 +813,8 @@ function saveMusicState(){
   const state = {
     src: music.src,
     time: music.currentTime,
-    muted: music.muted
+    muted: music.muted,
+    started: started
   };
 
   localStorage.setItem(
@@ -824,8 +824,10 @@ function saveMusicState(){
 
 }
 
-// RANDOM SONG
+// PLAY RANDOM SONG
 function playRandomSong(){
+
+  if(!playlist.length) return;
 
   const randomIndex = Math.floor(
     Math.random() * playlist.length
@@ -837,9 +839,7 @@ function playRandomSong(){
 
   music.load();
 
-  music.addEventListener('loadedmetadata', async function loadSong(){
-
-    music.removeEventListener('loadedmetadata', loadSong);
+  music.onloadedmetadata = async function(){
 
     try{
 
@@ -860,16 +860,20 @@ function playRandomSong(){
 
       saveMusicState();
 
+      musicBtn.innerHTML = music.muted
+        ? "🔇 Unmute"
+        : "🔊 Mute";
+
     }catch(err){
       console.log(err);
     }
 
-  });
+  };
 
 }
 
-// RESTORE AFTER RELOAD
-async function restoreMusic(){
+// RESTORE MUSIC
+function restoreMusic(){
 
   const saved = localStorage.getItem(STORAGE_KEY);
 
@@ -879,57 +883,80 @@ async function restoreMusic(){
 
   if(!state.src) return;
 
-  try{
+  started = state.started || false;
 
-    music.src = state.src;
+  music.src = state.src;
 
-    music.load();
+  music.load();
 
-    music.addEventListener('loadedmetadata', async function restoreLoaded(){
+  music.onloadedmetadata = function(){
 
-      music.removeEventListener(
-        'loadedmetadata',
-        restoreLoaded
-      );
+    music.currentTime = state.time || 0;
 
-      music.currentTime = state.time || 0;
+    music.volume = 0.3;
 
-      music.volume = 0.3;
+    music.muted = state.muted || false;
 
-      music.muted = state.muted || false;
-
-      await music.play();
-
-      started = true;
+    // DESKTOP AUTO PLAY
+    music.play()
+    .then(()=>{
 
       musicBtn.innerHTML = music.muted
         ? "🔇 Unmute"
         : "🔊 Mute";
 
+    })
+
+    // MOBILE BLOCKS AUTOPLAY
+    .catch(()=>{
+
+      // KEEP POSITION READY
+      music.pause();
+
+      musicBtn.innerHTML = "▶ Continue Music";
+
     });
 
-  }catch(err){
-    console.log(err);
-  }
+  };
 
 }
 
-// PLAY BUTTON
+// BUTTON
 musicBtn.addEventListener('click', async function(){
 
   if(!playlist.length) return;
 
+  // FIRST START
   if(!started){
 
     started = true;
 
-    await playRandomSong();
+    playRandomSong();
 
-    musicBtn.innerHTML = "🔊 Mute";
+    saveMusicState();
 
     return;
   }
 
+  // PLAY IF PAUSED
+  if(music.paused){
+
+    try{
+
+      await music.play();
+
+      musicBtn.innerHTML = music.muted
+        ? "🔇 Unmute"
+        : "🔊 Mute";
+
+    }catch(err){
+      console.log(err);
+    }
+
+    return;
+  }
+
+  // TOGGLE MUTE
   music.muted = !music.muted;
 
   musicBtn.innerHTML = music.muted
@@ -940,28 +967,42 @@ musicBtn.addEventListener('click', async function(){
 
 });
 
-// AUTO NEXT SONG
+// NEXT SONG
 music.addEventListener('ended', function(){
 
   playRandomSong();
 
 });
 
-// SAVE POSITION CONTINUOUSLY
+// SAVE POSITION OFTEN
 setInterval(function(){
 
   if(
     started &&
-    !music.paused &&
     music.currentTime > 0
   ){
     saveMusicState();
   }
 
-}, 2000);
+}, 1000);
 
-// SAVE BEFORE LEAVING PAGE
-window.addEventListener('beforeunload', saveMusicState);
+// SAVE BEFORE LEAVING
+window.addEventListener(
+  'beforeunload',
+  saveMusicState
+);
+
+// SAVE WHEN TAB HIDDEN
+document.addEventListener(
+  'visibilitychange',
+  function(){
+
+    if(document.hidden){
+      saveMusicState();
+    }
+
+  }
+);
 
 })();
 </script>
