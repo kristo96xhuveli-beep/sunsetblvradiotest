@@ -824,7 +824,7 @@ function saveMusicState(){
 
 }
 
-// PLAY RANDOM SONG
+// RANDOM SONG
 function playRandomSong(){
 
   if(!playlist.length) return;
@@ -837,7 +837,7 @@ function playRandomSong(){
 
   music.src = encodeURI(track.file);
 
-  music.load();
+  music.volume = 0.3;
 
   music.onloadedmetadata = async function(){
 
@@ -854,15 +854,11 @@ function playRandomSong(){
 
       music.currentTime = randomTime;
 
-      music.volume = 0.3;
-
       await music.play();
 
       saveMusicState();
 
-      musicBtn.innerHTML = music.muted
-        ? "🔇 Unmute"
-        : "🔊 Mute";
+      musicBtn.innerHTML = "🔊 Mute";
 
     }catch(err){
       console.log(err);
@@ -872,7 +868,7 @@ function playRandomSong(){
 
 }
 
-// RESTORE MUSIC
+// RESTORE
 function restoreMusic(){
 
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -885,59 +881,49 @@ function restoreMusic(){
 
   started = state.started || false;
 
+  // IMPORTANT:
+  // DIRECT SRC WITHOUT load()
   music.src = state.src;
 
-  // IMPORTANT
-  // DO NOT CALL music.load() ON MOBILE
-  // it resets currentTime on many mobile browsers
+  music.volume = 0.3;
 
-  music.addEventListener('loadedmetadata', async function restoreOnce(){
+  music.muted = state.muted || false;
 
-    music.removeEventListener(
-      'loadedmetadata',
-      restoreOnce
-    );
+  // FAST SEEK
+  music.addEventListener(
+    'loadedmetadata',
+    function restoreOnce(){
 
-    try{
+      music.removeEventListener(
+        'loadedmetadata',
+        restoreOnce
+      );
 
-      // WAIT A LITTLE
-      await new Promise(r => setTimeout(r, 200));
-
+      // SEEK IMMEDIATELY
       music.currentTime = state.time || 0;
 
-      music.volume = 0.3;
+      // PC AUTOPLAY
+      music.play()
 
-      music.muted = state.muted || false;
+      .then(()=>{
 
-      const playPromise = music.play();
+        musicBtn.innerHTML = music.muted
+          ? "🔇 Unmute"
+          : "🔊 Mute";
 
-      if(playPromise){
+      })
 
-        playPromise.then(()=>{
+      // MOBILE BLOCK
+      .catch(()=>{
 
-          musicBtn.innerHTML = music.muted
-            ? "🔇 Unmute"
-            : "🔊 Mute";
+        musicBtn.innerHTML =
+          "▶ Continue Music";
 
-        })
+      });
 
-        .catch(()=>{
-
-          // MOBILE BLOCK
-          music.pause();
-
-          musicBtn.innerHTML =
-            "▶ Continue Music";
-
-        });
-
-      }
-
-    }catch(err){
-      console.log(err);
-    }
-
-  });
+    },
+    { once:true }
+  );
 
 }
 
@@ -958,16 +944,16 @@ musicBtn.addEventListener('click', async function(){
     return;
   }
 
-  // RESTORED MOBILE PLAY
+  // PLAY FROM SAVED POSITION
   if(music.paused){
 
     try{
 
-      // RE-APPLY SAVED TIME
       const saved = JSON.parse(
         localStorage.getItem(STORAGE_KEY) || "{}"
       );
 
+      // FORCE POSITION AGAIN
       if(saved.time){
         music.currentTime = saved.time;
       }
@@ -985,7 +971,7 @@ musicBtn.addEventListener('click', async function(){
     return;
   }
 
-  // TOGGLE MUTE
+  // MUTE
   music.muted = !music.muted;
 
   musicBtn.innerHTML = music.muted
@@ -1003,7 +989,7 @@ music.addEventListener('ended', function(){
 
 });
 
-// SAVE OFTEN
+// SAVE VERY OFTEN
 setInterval(function(){
 
   if(
@@ -1013,9 +999,9 @@ setInterval(function(){
     saveMusicState();
   }
 
-}, 500);
+}, 300);
 
-// SAVE WHEN PAGE HIDES
+// SAVE WHEN APP CLOSES
 document.addEventListener(
   'visibilitychange',
   function(){
@@ -1025,7 +1011,11 @@ document.addEventListener(
   }
 );
 
-// SAVE BEFORE EXIT
+window.addEventListener(
+  'pagehide',
+  saveMusicState
+);
+
 window.addEventListener(
   'beforeunload',
   saveMusicState
