@@ -887,37 +887,57 @@ function restoreMusic(){
 
   music.src = state.src;
 
-  music.load();
+  // IMPORTANT
+  // DO NOT CALL music.load() ON MOBILE
+  // it resets currentTime on many mobile browsers
 
-  music.onloadedmetadata = function(){
+  music.addEventListener('loadedmetadata', async function restoreOnce(){
 
-    music.currentTime = state.time || 0;
+    music.removeEventListener(
+      'loadedmetadata',
+      restoreOnce
+    );
 
-    music.volume = 0.3;
+    try{
 
-    music.muted = state.muted || false;
+      // WAIT A LITTLE
+      await new Promise(r => setTimeout(r, 200));
 
-    // DESKTOP AUTO PLAY
-    music.play()
-    .then(()=>{
+      music.currentTime = state.time || 0;
 
-      musicBtn.innerHTML = music.muted
-        ? "🔇 Unmute"
-        : "🔊 Mute";
+      music.volume = 0.3;
 
-    })
+      music.muted = state.muted || false;
 
-    // MOBILE BLOCKS AUTOPLAY
-    .catch(()=>{
+      const playPromise = music.play();
 
-      // KEEP POSITION READY
-      music.pause();
+      if(playPromise){
 
-      musicBtn.innerHTML = "▶ Continue Music";
+        playPromise.then(()=>{
 
-    });
+          musicBtn.innerHTML = music.muted
+            ? "🔇 Unmute"
+            : "🔊 Mute";
 
-  };
+        })
+
+        .catch(()=>{
+
+          // MOBILE BLOCK
+          music.pause();
+
+          musicBtn.innerHTML =
+            "▶ Continue Music";
+
+        });
+
+      }
+
+    }catch(err){
+      console.log(err);
+    }
+
+  });
 
 }
 
@@ -938,10 +958,19 @@ musicBtn.addEventListener('click', async function(){
     return;
   }
 
-  // PLAY IF PAUSED
+  // RESTORED MOBILE PLAY
   if(music.paused){
 
     try{
+
+      // RE-APPLY SAVED TIME
+      const saved = JSON.parse(
+        localStorage.getItem(STORAGE_KEY) || "{}"
+      );
+
+      if(saved.time){
+        music.currentTime = saved.time;
+      }
 
       await music.play();
 
@@ -974,7 +1003,7 @@ music.addEventListener('ended', function(){
 
 });
 
-// SAVE POSITION OFTEN
+// SAVE OFTEN
 setInterval(function(){
 
   if(
@@ -984,24 +1013,22 @@ setInterval(function(){
     saveMusicState();
   }
 
-}, 1000);
+}, 500);
 
-// SAVE BEFORE LEAVING
-window.addEventListener(
-  'beforeunload',
-  saveMusicState
-);
-
-// SAVE WHEN TAB HIDDEN
+// SAVE WHEN PAGE HIDES
 document.addEventListener(
   'visibilitychange',
   function(){
 
-    if(document.hidden){
-      saveMusicState();
-    }
+    saveMusicState();
 
   }
+);
+
+// SAVE BEFORE EXIT
+window.addEventListener(
+  'beforeunload',
+  saveMusicState
 );
 
 })();
