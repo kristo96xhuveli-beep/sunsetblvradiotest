@@ -773,6 +773,7 @@ data-en="Qeparo is one of Albania's hidden gems — a charming village above a p
 </div>
 
 <script>
+<script>
 (function(){
 
 const music = document.getElementById('bgMusic');
@@ -783,6 +784,8 @@ music.playsInline = true;
 
 let playlist = [];
 let started = false;
+
+const STORAGE_KEY = "hotelMusicState";
 
 // LOAD PLAYLIST
 fetch('audio.json')
@@ -799,9 +802,30 @@ fetch('audio.json')
     playlist = data.night;
   }
 
+  // AUTO RESTORE
+  restoreMusic();
+
 });
 
-// PLAY RANDOM SONG
+// SAVE MUSIC STATE
+function saveMusicState(){
+
+  if(!music.src) return;
+
+  const state = {
+    src: music.src,
+    time: music.currentTime,
+    muted: music.muted
+  };
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(state)
+  );
+
+}
+
+// RANDOM SONG
 function playRandomSong(){
 
   const randomIndex = Math.floor(
@@ -835,6 +859,8 @@ function playRandomSong(){
 
       await music.play();
 
+      saveMusicState();
+
     }catch(err){
       console.log(err);
     }
@@ -843,8 +869,54 @@ function playRandomSong(){
 
 }
 
+// RESTORE AFTER RELOAD
+async function restoreMusic(){
+
+  const saved = localStorage.getItem(STORAGE_KEY);
+
+  if(!saved) return;
+
+  const state = JSON.parse(saved);
+
+  if(!state.src) return;
+
+  try{
+
+    music.src = state.src;
+
+    music.load();
+
+    music.addEventListener('loadedmetadata', async function restoreLoaded(){
+
+      music.removeEventListener(
+        'loadedmetadata',
+        restoreLoaded
+      );
+
+      music.currentTime = state.time || 0;
+
+      music.volume = 0.3;
+
+      music.muted = state.muted || false;
+
+      await music.play();
+
+      started = true;
+
+      musicBtn.innerHTML = music.muted
+        ? "🔇 Unmute"
+        : "🔊 Mute";
+
+    });
+
+  }catch(err){
+    console.log(err);
+  }
+
+}
+
 // PLAY BUTTON
-musicBtn.addEventListener('click', function(){
+musicBtn.addEventListener('click', async function(){
 
   if(!playlist.length) return;
 
@@ -852,7 +924,7 @@ musicBtn.addEventListener('click', function(){
 
     started = true;
 
-    playRandomSong();
+    await playRandomSong();
 
     musicBtn.innerHTML = "🔊 Mute";
 
@@ -865,6 +937,8 @@ musicBtn.addEventListener('click', function(){
     ? "🔇 Unmute"
     : "🔊 Mute";
 
+  saveMusicState();
+
 });
 
 // AUTO NEXT SONG
@@ -874,7 +948,24 @@ music.addEventListener('ended', function(){
 
 });
 
+// SAVE POSITION CONTINUOUSLY
+setInterval(function(){
+
+  if(
+    started &&
+    !music.paused &&
+    music.currentTime > 0
+  ){
+    saveMusicState();
+  }
+
+}, 2000);
+
+// SAVE BEFORE LEAVING PAGE
+window.addEventListener('beforeunload', saveMusicState);
+
 })();
+</script>
 </script>
   <script>
 
