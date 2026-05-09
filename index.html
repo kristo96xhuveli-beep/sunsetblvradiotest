@@ -1365,12 +1365,13 @@ document.addEventListener('click', function(e){
 
 </script>
 
-<audio id="radioPlayer" preload="auto" playsinline></audio>
+<audio id="radioPlayer" preload="metadata" playsinline></audio>
 
 <script>
 
 const musicBtn = document.getElementById("musicBtn");
 const radio = document.getElementById("radioPlayer");
+ radio.load();
 
 let playlists = {};
 let currentPlaylist = [];
@@ -1456,11 +1457,9 @@ musicBtn.addEventListener("click", async () => {
 
     }catch(err){
 
-      console.log(err);
+  console.log(err);
 
-      alert("Music failed");
-
-    }
+}
 
     return;
   }
