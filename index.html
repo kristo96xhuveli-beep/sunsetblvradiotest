@@ -1365,7 +1365,6 @@ document.addEventListener('click', function(e){
 });
 
 </script>
-<audio id="radioPlayer" preload="auto" playsinline></audio>
 
 <script>
 
@@ -1381,18 +1380,16 @@ let currentIndex = 0;
 
 let started = false;
 
-// LOAD JSON
+// LOAD PLAYLIST JSON
 fetch("audio.json")
 .then(res => res.json())
 .then(data => {
 
   playlists = data;
 
-  currentPlaylist = getPlaylist();
-
 });
 
-// GET PLAYLIST BY TIME
+// GET CURRENT PLAYLIST
 function getPlaylist(){
 
   const hour = new Date().getHours();
@@ -1417,7 +1414,7 @@ function loadSong(){
 
 }
 
-// NEXT RANDOM SONG
+// NEXT SONG
 function nextSong(){
 
   currentPlaylist = getPlaylist();
@@ -1442,6 +1439,13 @@ musicBtn.addEventListener("click", async () => {
 
     currentPlaylist = getPlaylist();
 
+    if(currentPlaylist.length === 0){
+
+      alert("No songs found");
+
+      return;
+    }
+
     currentIndex =
       Math.floor(Math.random() * currentPlaylist.length);
 
@@ -1460,6 +1464,8 @@ musicBtn.addEventListener("click", async () => {
     }catch(err){
 
       console.log(err);
+
+      alert("Music failed");
 
     }
 
