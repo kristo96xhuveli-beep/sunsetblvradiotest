@@ -247,16 +247,6 @@ body.dark .avail-btn:hover{background:#2a5a8c;}
 </head>
 <body>
 
-<iframe
-  id="radioFrame"
-  src=""
-  style="
-    display:none;
-    width:0;
-    height:0;
-    border:none;
-  ">
-</iframe>
  
 <div class="menu-overlay" id="menuOverlay">
   <div class="menu-panel">
@@ -1379,35 +1369,37 @@ document.addEventListener('click', function(e){
 
 const musicBtn = document.getElementById('musicBtn');
 
-const radioFrame = document.getElementById('radioFrame');
+const radio = document.getElementById('radioPlayer');
+
+// YOUR DIRECT RADIO STREAM
+radio.src = "YOUR_STREAM_LINK_HERE";
+
+radio.volume = 1;
 
 let started = false;
 let muted = false;
 
-// YOUR RADIO LINK
-const radioURL = "https://stream.zeno.fm/YOUR-LINK-HERE";
-
-// BUTTON CLICK
 musicBtn.addEventListener('click', async function(){
 
-  // FIRST CLICK = START RADIO
+  // FIRST CLICK = START
   if(!started){
 
-    radioFrame.src = radioURL;
+    try {
 
-    started = true;
-    muted = false;
+      await radio.play();
 
-    musicBtn.innerHTML = "🔊 Unmute";
+      started = true;
+      muted = false;
 
-    // try autoplay fix
-    radioFrame.style.display = "block";
+      musicBtn.innerHTML = "🔊 Unmute";
 
-    setTimeout(() => {
-      radioFrame.style.width = "1px";
-      radioFrame.style.height = "1px";
-      radioFrame.style.opacity = "0.01";
-    }, 100);
+    } catch(err){
+
+      console.log(err);
+
+      alert("Radio failed to start");
+
+    }
 
     return;
   }
@@ -1415,14 +1407,14 @@ musicBtn.addEventListener('click', async function(){
   // TOGGLE MUTE
   muted = !muted;
 
+  radio.muted = muted;
+
   if(muted){
 
-    radioFrame.style.visibility = "hidden";
     musicBtn.innerHTML = "🔇 Mute";
 
   } else {
 
-    radioFrame.style.visibility = "visible";
     musicBtn.innerHTML = "🔊 Unmute";
 
   }
@@ -1430,6 +1422,8 @@ musicBtn.addEventListener('click', async function(){
 });
 
 </script>
+ 
+<audio id="radioPlayer" preload="none" playsinline ></audio>
  
 </body>
 </html>
