@@ -277,7 +277,7 @@ body.dark .avail-btn:hover{background:#2a5a8c;}
   <button class="menu-btn" id="menuBtn">&#9776;</button>
   <button class="back-btn" id="backBtn">&#8592;</button>
   <div class="title" id="pageTitle">Sunset Boulevard<br><small>Beach Hotel</small></div>
-  <button class="music-btn" id="musicBtn"> ▶ Radio </button>
+  <button class="music-btn" id="musicBtn"> ▶ Music </button>
 </header>
 
 <!-- HOME -->
@@ -1365,39 +1365,101 @@ document.addEventListener('click', function(e){
 });
 
 </script>
- <script>
+<audio id="radioPlayer" preload="auto" playsinline></audio>
 
-const musicBtn = document.getElementById('musicBtn');
+<script>
 
-const radio = document.getElementById('radioPlayer');
+const musicBtn = document.getElementById("musicBtn");
 
-// YOUR DIRECT RADIO STREAM
-radio.src = "YOUR_STREAM_LINK_HERE";
+const radio = document.getElementById("radioPlayer");
 
-radio.volume = 1;
+let playlists = {};
+
+let currentPlaylist = [];
+
+let currentIndex = 0;
 
 let started = false;
-let muted = false;
 
-musicBtn.addEventListener('click', async function(){
+// LOAD JSON
+fetch("audio.json")
+.then(res => res.json())
+.then(data => {
 
-  // FIRST CLICK = START
+  playlists = data;
+
+  currentPlaylist = getPlaylist();
+
+});
+
+// GET PLAYLIST BY TIME
+function getPlaylist(){
+
+  const hour = new Date().getHours();
+
+  if(hour >= 6 && hour < 12){
+    return playlists.morning || [];
+  }
+
+  if(hour >= 12 && hour < 20){
+    return playlists.day || [];
+  }
+
+  return playlists.night || [];
+}
+
+// LOAD SONG
+function loadSong(){
+
+  if(currentPlaylist.length === 0) return;
+
+  radio.src = currentPlaylist[currentIndex];
+
+}
+
+// NEXT RANDOM SONG
+function nextSong(){
+
+  currentPlaylist = getPlaylist();
+
+  currentIndex =
+    Math.floor(Math.random() * currentPlaylist.length);
+
+  loadSong();
+
+  radio.play();
+
+}
+
+// AUTO NEXT
+radio.addEventListener("ended", nextSong);
+
+// BUTTON
+musicBtn.addEventListener("click", async () => {
+
+  // FIRST START
   if(!started){
 
-    try {
+    currentPlaylist = getPlaylist();
+
+    currentIndex =
+      Math.floor(Math.random() * currentPlaylist.length);
+
+    loadSong();
+
+    try{
 
       await radio.play();
 
       started = true;
-      muted = false;
 
-      musicBtn.innerHTML = "🔊 Unmute";
+      radio.muted = false;
 
-    } catch(err){
+      musicBtn.innerHTML = "🔇 Mute";
+
+    }catch(err){
 
       console.log(err);
-
-      alert("Radio failed to start");
 
     }
 
@@ -1405,25 +1467,18 @@ musicBtn.addEventListener('click', async function(){
   }
 
   // TOGGLE MUTE
-  muted = !muted;
+  radio.muted = !radio.muted;
 
-  radio.muted = muted;
-
-  if(muted){
-
-    musicBtn.innerHTML = "🔇 Mute";
-
-  } else {
-
-    musicBtn.innerHTML = "🔊 Unmute";
-
-  }
+  musicBtn.innerHTML =
+    radio.muted
+    ? "🔊 Unmute"
+    : "🔇 Mute";
 
 });
 
 </script>
  
-<audio id="radioPlayer" preload="none" playsinline ></audio>
+<audio id="radioPlayer" preload="auto" playsinline></audio>
  
 </body>
 </html>
