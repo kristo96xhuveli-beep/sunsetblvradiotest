@@ -1022,7 +1022,6 @@ var nextBtn = wrapper.querySelector('.next');
   }
 });
 
-})();
 </script>
 
 <script>
@@ -1366,30 +1365,26 @@ document.addEventListener('click', function(e){
 
 </script>
 
+<audio id="radioPlayer" preload="auto" playsinline></audio>
+
 <script>
 
 const musicBtn = document.getElementById("musicBtn");
-
 const radio = document.getElementById("radioPlayer");
 
 let playlists = {};
-
 let currentPlaylist = [];
-
 let currentIndex = 0;
-
 let started = false;
 
-// LOAD PLAYLIST JSON
+// LOAD PLAYLIST
 fetch("audio.json")
 .then(res => res.json())
 .then(data => {
-
   playlists = data;
-
 });
 
-// GET CURRENT PLAYLIST
+// GET PLAYLIST
 function getPlaylist(){
 
   const hour = new Date().getHours();
@@ -1440,9 +1435,7 @@ musicBtn.addEventListener("click", async () => {
     currentPlaylist = getPlaylist();
 
     if(currentPlaylist.length === 0){
-
       alert("No songs found");
-
       return;
     }
 
@@ -1483,8 +1476,6 @@ musicBtn.addEventListener("click", async () => {
 });
 
 </script>
- 
-<audio id="radioPlayer" preload="auto" playsinline></audio>
  
 </body>
 </html>
