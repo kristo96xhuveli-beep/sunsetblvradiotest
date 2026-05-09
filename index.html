@@ -1382,7 +1382,16 @@ let started = false;
 fetch("audio.json")
 .then(res => res.json())
 .then(data => {
+
   playlists = data;
+
+  currentPlaylist = getPlaylist();
+
+  currentIndex =
+    Math.floor(Math.random() * currentPlaylist.length);
+
+  loadSong();
+
 });
 
 // GET PLAYLIST
