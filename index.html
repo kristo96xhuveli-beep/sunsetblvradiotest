@@ -1377,39 +1377,57 @@ document.addEventListener('click', function(e){
 </script>
  <script>
 
-document.addEventListener(
-  'DOMContentLoaded',
-  function(){
+const musicBtn = document.getElementById('musicBtn');
 
-    const musicBtn =
-    document.getElementById('musicBtn');
+const radioFrame = document.getElementById('radioFrame');
 
-    const radioFrame =
-    document.getElementById('radioFrame');
+let started = false;
+let muted = false;
 
-    let started = false;
+// YOUR RADIO LINK
+const radioURL = "https://stream.zeno.fm/YOUR-LINK-HERE";
 
-    musicBtn.addEventListener(
-      'click',
-      function(){
+// BUTTON CLICK
+musicBtn.addEventListener('click', async function(){
 
-        if(!started){
+  // FIRST CLICK = START RADIO
+  if(!started){
 
-          radioFrame.src =
-          'https://radio.kristo96xhuveli.workers.dev/';
+    radioFrame.src = radioURL;
 
-          started = true;
+    started = true;
+    muted = false;
 
-          musicBtn.innerHTML =
-          '⏸ Radio';
+    musicBtn.innerHTML = "🔊 Unmute";
 
-        }
+    // try autoplay fix
+    radioFrame.style.display = "block";
 
-      }
-    );
+    setTimeout(() => {
+      radioFrame.style.width = "1px";
+      radioFrame.style.height = "1px";
+      radioFrame.style.opacity = "0.01";
+    }, 100);
+
+    return;
+  }
+
+  // TOGGLE MUTE
+  muted = !muted;
+
+  if(muted){
+
+    radioFrame.style.visibility = "hidden";
+    musicBtn.innerHTML = "🔇 Mute";
+
+  } else {
+
+    radioFrame.style.visibility = "visible";
+    musicBtn.innerHTML = "🔊 Unmute";
 
   }
-);
+
+});
 
 </script>
  
