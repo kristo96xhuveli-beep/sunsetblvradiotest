@@ -32,6 +32,97 @@ body:not(.home-active) #info-mobile { display: none; }
 #ourstory-anchor-mobile,
 #info-mobile { display: none !important; }}
 /* DESKTOP HOME LAYOUT */
+@media(min-width:768px){
+
+.info-map-wrap{
+display:flex;
+align-items:stretch;
+gap:18px;
+margin-top:18px;
+}
+
+.info-map{
+position:relative;
+width:140px;
+min-width:140px;
+height:140px;
+border-radius:16px;
+overflow:hidden;
+background:#102847;
+border:1px solid rgba(255,255,255,0.12);
+}
+
+/* fake white roads */
+.info-map::before{
+content:"";
+position:absolute;
+inset:0;
+background:
+linear-gradient(90deg,
+transparent 0%,
+transparent 47%,
+rgba(255,255,255,0.08) 48%,
+rgba(255,255,255,0.08) 52%,
+transparent 53%),
+linear-gradient(
+180deg,
+transparent 0%,
+transparent 28%,
+rgba(255,255,255,0.08) 29%,
+rgba(255,255,255,0.08) 31%,
+transparent 32%),
+linear-gradient(
+135deg,
+transparent 0%,
+transparent 58%,
+rgba(255,255,255,0.06) 59%,
+rgba(255,255,255,0.06) 61%,
+transparent 62%);
+opacity:.9;
+}
+
+/* buildings */
+.info-map::after{
+content:"";
+position:absolute;
+inset:18px;
+background-image:
+radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+background-size:16px 16px;
+opacity:.7;
+}
+
+/* pin */
+.info-pin{
+position:absolute;
+top:50%;
+left:52%;
+transform:translate(-50%,-100%);
+z-index:2;
+width:18px;
+height:18px;
+background:white;
+border-radius:50% 50% 50% 0;
+transform:translate(-50%,-100%) rotate(-45deg);
+box-shadow:0 0 10px rgba(255,255,255,0.35);
+}
+
+.info-pin::after{
+content:"";
+position:absolute;
+width:7px;
+height:7px;
+background:#0b1f3a;
+border-radius:50%;
+top:5px;
+left:5px;
+}
+
+.info-contact{
+flex:1;
+}
+
+}
 .home-desktop{display:block;}
 @media(min-width:768px){
 .home-desktop{display:flex;flex-direction:column;gap:20px;}
@@ -400,9 +491,19 @@ Mirë se vini në shtëpinë tonë.">
       <div style="flex:1 1 33%;"></div>
       <div class="side-info-block" id="info">
         <h2 data-edit="info-title" style="margin:0 0 10px;font-size:22px;text-align:center;">Info</h2>
-<p data-edit="info-whatsapp">WhatsApp: +355 XX XXX XXXX</p>
-<p data-edit="info-email">Email: info@sunsetblvd3.com</p>
-<p data-edit="info-location">Location: Qeparo, Vlorë, Albania</p>
+
+<div class="info-map-wrap">
+
+  <div class="info-map">
+    <div class="info-pin"></div>
+  </div>
+
+  <div class="info-contact">
+    <p data-edit="info-whatsapp">WhatsApp: +355 XX XXX XXXX</p>
+    <p data-edit="info-email">Email: info@sunsetblvd3.com</p>
+    <p data-edit="info-location">Location: Qeparo, Vlorë, Albania</p>
+  </div>
+ </div>
         <div style="display:flex;justify-content:center;gap:28px;margin-top:22px;">
           <a href="https://maps.app.goo.gl/nJMC9Ebtgd8oft4K8" target="_blank" style="color:white;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;">
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
