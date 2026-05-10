@@ -36,90 +36,103 @@ body:not(.home-active) #info-mobile { display: none; }
 
 .info-map-wrap{
 display:flex;
-align-items:stretch;
-gap:18px;
+align-items:center;
+justify-content:space-between;
+gap:28px;
 margin-top:18px;
 }
 
 .info-map{
 position:relative;
-width:140px;
-min-width:140px;
-height:140px;
-border-radius:16px;
+width:220px;
+min-width:220px;
+height:180px;
+border-radius:20px;
 overflow:hidden;
 background:#102847;
-border:1px solid rgba(255,255,255,0.12);
+flex-shrink:0;
+order:2;
 }
 
-/* fake white roads */
+/* roads */
 .info-map::before{
 content:"";
 position:absolute;
 inset:0;
 background:
-linear-gradient(90deg,
+linear-gradient(
+90deg,
 transparent 0%,
-transparent 47%,
-rgba(255,255,255,0.08) 48%,
-rgba(255,255,255,0.08) 52%,
-transparent 53%),
+transparent 46%,
+rgba(255,255,255,0.10) 47%,
+rgba(255,255,255,0.10) 53%,
+transparent 54%
+),
+
 linear-gradient(
 180deg,
 transparent 0%,
 transparent 28%,
 rgba(255,255,255,0.08) 29%,
 rgba(255,255,255,0.08) 31%,
-transparent 32%),
+transparent 32%
+),
+
 linear-gradient(
 135deg,
 transparent 0%,
 transparent 58%,
 rgba(255,255,255,0.06) 59%,
 rgba(255,255,255,0.06) 61%,
-transparent 62%);
-opacity:.9;
+transparent 62%
+);
+
+opacity:.95;
 }
 
-/* buildings */
+/* buildings texture */
 .info-map::after{
 content:"";
 position:absolute;
 inset:18px;
 background-image:
-radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+radial-gradient(
+rgba(255,255,255,0.08) 1px,
+transparent 1px
+);
+
 background-size:16px 16px;
-opacity:.7;
+opacity:.8;
 }
 
-/* pin */
+/* location pin */
 .info-pin{
 position:absolute;
 top:50%;
-left:52%;
-transform:translate(-50%,-100%);
-z-index:2;
-width:18px;
-height:18px;
+left:58%;
+width:20px;
+height:20px;
 background:white;
 border-radius:50% 50% 50% 0;
 transform:translate(-50%,-100%) rotate(-45deg);
-box-shadow:0 0 10px rgba(255,255,255,0.35);
+z-index:2;
+box-shadow:0 0 14px rgba(255,255,255,0.25);
 }
 
 .info-pin::after{
 content:"";
 position:absolute;
-width:7px;
-height:7px;
+width:8px;
+height:8px;
 background:#0b1f3a;
 border-radius:50%;
-top:5px;
-left:5px;
+top:6px;
+left:6px;
 }
 
 .info-contact{
 flex:1;
+order:1;
 }
 
 }
