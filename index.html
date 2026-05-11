@@ -1511,11 +1511,15 @@ document.addEventListener('click', function(e){
 
 const musicBtn = document.getElementById("musicBtn");
 const radio = document.getElementById("radioPlayer");
- radio.load();
+
+radio.load();
 
 let playlists = {};
 let currentPlaylist = [];
-let currentIndex = 0;
+
+let playedSongs = [];
+let currentSong = null;
+
 let started = false;
 
 // LOAD PLAYLIST
@@ -1527,10 +1531,7 @@ fetch("audio.json")
 
   currentPlaylist = getPlaylist();
 
-  currentIndex =
-    Math.floor(Math.random() * currentPlaylist.length);
-
-  loadSong();
+  playRandomSong();
 
 });
 
@@ -1550,24 +1551,51 @@ function getPlaylist(){
   return playlists.night || [];
 }
 
-// LOAD SONG
-function loadSong(){
+// PLAY RANDOM SONG WITHOUT REPEATS
+function playRandomSong(){
+
+  currentPlaylist = getPlaylist();
 
   if(currentPlaylist.length === 0) return;
 
-  radio.src = currentPlaylist[currentIndex];
+  // RESET WHEN ALL SONGS PLAYED
+  if(playedSongs.length >= currentPlaylist.length){
+    playedSongs = [];
+  }
+
+  // AVAILABLE SONGS
+  let availableSongs = currentPlaylist.filter(song =>
+    !playedSongs.includes(song)
+  );
+
+  // AVOID SAME SONG TWICE IN ROW
+  if(
+    availableSongs.length > 1 &&
+    currentSong
+  ){
+    availableSongs = availableSongs.filter(song =>
+      song !== currentSong
+    );
+  }
+
+  // RANDOM SONG
+  const randomSong =
+    availableSongs[
+      Math.floor(Math.random() * availableSongs.length)
+    ];
+
+  currentSong = randomSong;
+
+  playedSongs.push(randomSong);
+
+  radio.src = randomSong;
 
 }
 
 // NEXT SONG
 function nextSong(){
 
-  currentPlaylist = getPlaylist();
-
-  currentIndex =
-    Math.floor(Math.random() * currentPlaylist.length);
-
-  loadSong();
+  playRandomSong();
 
   radio.play();
 
@@ -1582,17 +1610,7 @@ musicBtn.addEventListener("click", async () => {
   // FIRST START
   if(!started){
 
-    currentPlaylist = getPlaylist();
-
-    if(currentPlaylist.length === 0){
-      alert("No songs found");
-      return;
-    }
-
-    currentIndex =
-      Math.floor(Math.random() * currentPlaylist.length);
-
-    loadSong();
+    playRandomSong();
 
     try{
 
@@ -1606,9 +1624,9 @@ musicBtn.addEventListener("click", async () => {
 
     }catch(err){
 
-  console.log(err);
+      console.log(err);
 
-}
+    }
 
     return;
   }
