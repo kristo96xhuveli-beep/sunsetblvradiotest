@@ -32,38 +32,24 @@ body:not(.home-active) #info-mobile { display: none; }
 #ourstory-anchor-mobile,
 #info-mobile { display: none !important; }}
 /* DESKTOP HOME LAYOUT */
-@media(min-width:768px){
-
-.side-info-block{
-position:relative;
-overflow:hidden;
-}
-
-.info-contact{
-position:relative;
-z-index:2;
-max-width:320px;
-}
-
 .info-map-image{
 position:absolute;
 top:0;
 right:0;
 
-width:65%;
+width:52%;
 height:100%;
 
 background-image:url("info-map.png");
-background-size:cover;
-background-position:center;
+background-size:contain;
+background-repeat:no-repeat;
+background-position:right center;
 
 opacity:.72;
 
 mix-blend-mode:screen;
 
 pointer-events:none;
-}
-
 }
 .home-desktop{display:block;}
 @media(min-width:768px){
