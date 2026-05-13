@@ -34,131 +34,34 @@ body:not(.home-active) #info-mobile { display: none; }
 /* DESKTOP HOME LAYOUT */
 @media(min-width:768px){
 
-.info-map-wrap{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:40px;
-margin-top:20px;
+.side-info-block{
+position:relative;
+overflow:hidden;
 }
 
 .info-contact{
-flex:0 0 260px;
-order:1;
 position:relative;
 z-index:2;
+max-width:320px;
 }
 
-.info-map{
-position:relative;
-flex:1;
-height:260px;
-margin-right:-10px;
-border-radius:0;
-overflow:hidden;
-background:transparent;
-order:2;
-}
-
-/* main roads */
-.info-map::before{
-content:"";
+.info-map-image{
 position:absolute;
-inset:0;
+top:0;
+right:0;
 
-background:
+width:65%;
+height:100%;
 
-/* vertical road */
-linear-gradient(
-90deg,
-transparent 0%,
-transparent 63%,
-rgba(255,255,255,0.10) 64%,
-rgba(255,255,255,0.10) 66%,
-transparent 67%
-),
+background-image:url("info-map.png");
+background-size:cover;
+background-position:center;
 
-/* horizontal road */
-linear-gradient(
-180deg,
-transparent 0%,
-transparent 38%,
-rgba(255,255,255,0.08) 39%,
-rgba(255,255,255,0.08) 41%,
-transparent 42%
-),
+opacity:.72;
 
-/* diagonal coastline road */
-linear-gradient(
-135deg,
-transparent 0%,
-transparent 70%,
-rgba(255,255,255,0.08) 71%,
-rgba(255,255,255,0.08) 73%,
-transparent 74%
-),
+mix-blend-mode:screen;
 
-/* extra small roads */
-linear-gradient(
-160deg,
-transparent 0%,
-transparent 22%,
-rgba(255,255,255,0.05) 23%,
-rgba(255,255,255,0.05) 24%,
-transparent 25%
-),
-
-linear-gradient(
-45deg,
-transparent 0%,
-transparent 78%,
-rgba(255,255,255,0.04) 79%,
-rgba(255,255,255,0.04) 80%,
-transparent 81%
-);
-
-opacity:.95;
-}
-
-/* buildings */
-.info-map::after{
-content:"";
-position:absolute;
-inset:0;
-
-background-image:
-radial-gradient(
-rgba(255,255,255,0.10) 1px,
-transparent 1px
-);
-
-background-size:20px 20px;
-opacity:.5;
-}
-
-/* location pin */
-.info-pin{
-position:absolute;
-top:52%;
-left:72%;
-width:24px;
-height:24px;
-background:white;
-border-radius:50% 50% 50% 0;
-transform:translate(-50%,-100%) rotate(-45deg);
-z-index:3;
-box-shadow:0 0 20px rgba(255,255,255,0.2);
-}
-
-.info-pin::after{
-content:"";
-position:absolute;
-width:9px;
-height:9px;
-background:#0b1f3a;
-border-radius:50%;
-top:7px;
-left:7px;
+pointer-events:none;
 }
 
 }
@@ -531,11 +434,7 @@ Mirë se vini në shtëpinë tonë.">
       <div class="side-info-block" id="info">
         <h2 data-edit="info-title" style="margin:0 0 10px;font-size:22px;text-align:center;">Info</h2>
 
-<div class="info-map-wrap">
-
-  <div class="info-map">
-    <div class="info-pin"></div>
-  </div>
+<div class="info-map"></div>
 
   <div class="info-contact">
     <p data-edit="info-whatsapp">WhatsApp: +355 XX XXX XXXX</p>
