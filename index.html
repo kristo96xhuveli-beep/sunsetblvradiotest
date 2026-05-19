@@ -372,28 +372,6 @@ body.dark .avail-btn:hover{background:#2a5a8c;}
 .sec-row p{margin:0 0 14px;font-size:13px;line-height:1.6;color:var(--sub2);}
 }
 
-.avail-btn{
-position:relative;
-z-index:9999;
-touch-action:manipulation;
-}
-
-.room-card{
-position:relative;
-z-index:1;
-}
-
-.slider,
-.slider-wrapper,
-.slider img{
-pointer-events:auto;
-}
-
-.rinfo{
-position:relative;
-z-index:9999;
-}
-
  
 </style>
 </head>
@@ -709,8 +687,7 @@ Mirë se vini në shtëpinë tonë.">
         <button
 type="button"
 class="avail-btn"
-ontouchstart="event.stopPropagation();"
-onclick="event.stopPropagation(); openBookingOptions('https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html');">
+onclick="window.location.href='https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html'">
 Check Availability
 </button>
       </div>
@@ -745,8 +722,7 @@ Check Availability
         <button
 type="button"
 class="avail-btn"
-ontouchstart="event.stopPropagation();"
-onclick="event.stopPropagation(); openBookingOptions('https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html');">
+onclick="window.location.href='https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html'">
 Check Availability
 </button>
       </div>
@@ -781,8 +757,7 @@ Check Availability
         <button
 type="button"
 class="avail-btn"
-ontouchstart="event.stopPropagation();"
-onclick="event.stopPropagation(); openBookingOptions('https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html');">
+onclick="window.location.href='https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html'">
 Check Availability
 </button>
       </div>
@@ -1675,104 +1650,7 @@ musicBtn.addEventListener("click", async () => {
 
 });
 
-</script>
 
-<div id="bookingModal" style="
-display:none;
-visibility:hidden;
-opacity:0;
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.5);
-z-index:99999;
-align-items:center;
-justify-content:center;
-">
-
-<div style="
-background:white;
-padding:24px;
-border-radius:16px;
-width:280px;
-text-align:center;
-">
-
-<h3>Select Option</h3>
-
-<button onclick="goBooking()" style="
-display:block;
-width:100%;
-margin-bottom:10px;
-padding:12px;
-border:none;
-border-radius:10px;
-background:#003580;
-color:white;
-cursor:pointer;
-">
-Booking.com
-</button>
-
-<button onclick="goWhatsapp()" style="
-display:block;
-width:100%;
-padding:12px;
-border:none;
-border-radius:10px;
-background:#25D366;
-color:white;
-cursor:pointer;
-">
-WhatsApp
-</button>
-
-<button onclick="closeBookingModal()" style="
-margin-top:14px;
-background:none;
-border:none;
-cursor:pointer;
-">
-Close
-</button>
-
-</div>
-</div>
-
-<script>
-
-let bookingUrl = "";
-
-function openBookingOptions(link){
-
-  bookingUrl = link;
-
-  const modal = document.getElementById("bookingModal");
-
-  modal.style.display = "flex";
-}
-
-function goBooking(){
-
-  if(bookingUrl){
-    window.open(bookingUrl, "_self");
-  }
-}
-
-function goWhatsapp(){
-
-  window.location.href =
-    "https://wa.me/355XXXXXXXXX";
-}
-
-function closeBookingModal(){
-
-  document.getElementById("bookingModal").style.display = "none";
-}
-
-</script>
  
 </body>
 </html>
