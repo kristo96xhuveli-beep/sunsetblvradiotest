@@ -684,11 +684,11 @@ Mirë se vini në shtëpinë tonë.">
         <span class="tag">Most Popular</span>
         <h3 data-edit="rooms-1-title">Deluxe Double Room</h3>
         <p data-edit="rooms-1-desc">Elegant double room with private balcony, sea views, air conditioning and en-suite bathroom.</p>
-        <button class="avail-btn"
-onclick="openBookingOptions(
-'https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html'
-)">
-  Check Availability
+        <button
+class="avail-btn"
+type="button"
+onclick="event.stopPropagation(); event.preventDefault(); openBookingOptions('https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html'); return false;">
+Check Availability
 </button>
       </div>
     </div>
@@ -719,11 +719,11 @@ onclick="openBookingOptions(
         <span class="tag">Great for Families</span>
         <h3 data-edit="rooms-2-title">Simple Triple Room</h3>
         <p data-edit="rooms-2-desc">Comfortable triple room for families with air conditioning and private bathroom.</p>
-        <button class="avail-btn"
-onclick="openBookingOptions(
-'https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html'
-)">
-  Check Availability
+        <button
+class="avail-btn"
+type="button"
+onclick="event.stopPropagation(); event.preventDefault(); openBookingOptions('https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html'); return false;">
+Check Availability
 </button>
       </div>
     </div>
@@ -754,11 +754,11 @@ onclick="openBookingOptions(
         <span class="tag">Best Value</span>
         <h3 data-edit="rooms-3-title">Standard Triple Room</h3>
         <p data-edit="rooms-3-desc">Cozy and affordable triple room with all essentials, just a few steps from the beach.</p>
-        <button class="avail-btn"
-onclick="openBookingOptions(
-'https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html'
-)">
-  Check Availability
+        <button
+class="avail-btn"
+type="button"
+onclick="event.stopPropagation(); event.preventDefault(); openBookingOptions('https://www.booking.com/hotel/al/sunset-boulevard-rooms.en-gb.html'); return false;">
+Check Availability
 </button>
       </div>
     </div>
@@ -1726,28 +1726,25 @@ function openBookingOptions(link){
 
   const modal = document.getElementById("bookingModal");
 
-modal.style.display = "flex";
-modal.style.visibility = "visible";
-modal.style.opacity = "1";
+  modal.style.display = "flex";
 }
 
 function goBooking(){
-  window.open(bookingUrl, "_blank");
+
+  if(bookingUrl){
+    window.location.href = bookingUrl;
+  }
 }
 
 function goWhatsapp(){
-  window.open(
-    "https://wa.me/355692853586",
-    "_blank"
-  );
+
+  window.location.href =
+    "https://wa.me/355XXXXXXXXX";
 }
 
 function closeBookingModal(){
-  const modal = document.getElementById("bookingModal");
 
-modal.style.display = "none";
-modal.style.visibility = "hidden";
-modal.style.opacity = "0";
+  document.getElementById("bookingModal").style.display = "none";
 }
 
 </script>
