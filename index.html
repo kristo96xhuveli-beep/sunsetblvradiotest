@@ -265,8 +265,24 @@ body.dark .avail-btn:hover{background:#2a5a8c;}
 @media(max-width:767px){
 #page-food h2, #page-activities h2, #page-food h3, #page-activities h3, #page-food p, #page-activities p{ text-align:center;}
 }
+
+@media(max-width:768px){
+.seaside-experience{padding:50px 20px;text-align:center;}
+.seaside-experience h2{font-size:42px;line-height:1.2;margin-bottom:20px;}
+.seaside-experience p{font-size:20px;line-height:1.7;margin-bottom:50px;}
+.experience-icons{display:grid;grid-template-columns:repeat(2,1fr);gap:35px 20px;}
+.experience-item{display:flex;flex-direction:column;align-items:center;text-align:center;}
+.experience-icon{width:110px;height:110px;font-size:46px;}
+.experience-item span{font-size:22px;}
+.cocktails-icon .music-note{right:24px;bottom:22px;font-size:20px;}
+.cocktails-icon::before{width:18px;height:18px;top:30px;left:33px;}
+}
  
 </style>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 </head>
 <body>
 
@@ -386,6 +402,50 @@ body.dark .avail-btn:hover{background:#2a5a8c;}
         </div>
       </div>
     </div>
+
+   <section class="seaside-experience">
+
+    <h2>A Seaside Experience Since 2000</h2>
+
+    <p>
+        Hosting seaside stays with warm hospitality, comfortable accommodation,
+        tasty cocktails, good music, and unforgettable summer vibes.
+    </p>
+
+    <div class="experience-icons">
+
+        <div class="experience-item">
+            <div class="experience-icon">
+                <i class="fa-regular fa-calendar"></i>
+            </div>
+            <span>May – October</span>
+        </div>
+
+        <div class="experience-item">
+            <div class="experience-icon beachfront-icon">
+                <i class="fa-solid fa-umbrella-beach"></i>
+            </div>
+            <span>Beachfront</span>
+        </div>
+
+        <div class="experience-item">
+            <div class="experience-icon">
+                <i class="fa-solid fa-people-group"></i>
+            </div>
+            <span>Family Run</span>
+        </div>
+
+        <div class="experience-item">
+            <div class="experience-icon cocktails-icon">
+                <i class="fa-solid fa-martini-glass"></i>
+                <i class="fa-solid fa-music music-note"></i>
+            </div>
+            <span>Cocktails & Music</span>
+        </div>
+
+    </div>
+
+</section>
 
     <!-- RIGHT: Our Story on top, Info with blue bg at 1/3 down -->
     <div class="home-right" style="flex-direction:column;">
