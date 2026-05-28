@@ -14,7 +14,7 @@ header{position:fixed;top:0;left:0;width:100%;height:72px;background:var(--heade
 .menu-btn{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:22px;cursor:pointer;color:var(--text);background:none;border:none;padding:4px 8px;}
 .back-btn{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:22px;cursor:pointer;color:var(--text);background:none;border:none;padding:4px 8px;display:none;}
 .music-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#0b1f3a;color:white;padding:6px 8px;border-radius:6px;font-size:11px;white-space:nowrap;border:none;cursor:pointer;}
-.title{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:14px;text-align:center;line-height:1.1;width:60%;overflow:hidden;text-overflow:ellipsis;color:var(--text);}
+.title{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:22px;font-weight:500;letter-spacing:.5px;text-align:center;line-height:1;width:auto;color:var(--text);font-family:'Playfair Display',serif;white-space:nowrap;}
 .page{display:none;padding-top:60px;min-height:auto;}
 .page.active{display:block;}
 .reel-corner{display:none;}
@@ -316,7 +316,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 <header>
   <button class="menu-btn" id="menuBtn">&#9776;</button>
   <button class="back-btn" id="backBtn">&#8592;</button>
-  <div class="title" id="pageTitle">Sunset Boulevard<br><small>Beach Hotel</small></div>
+  <div class="title" id="pageTitle">Sunset Boulevard<br><small style="font-size:12px;letter-spacing:3px;text-transform:uppercase;opacity:.7;">Beach Hotel</small></div>
   <button class="music-btn" id="musicBtn"> ▶ Music </button>
 </header>
 
